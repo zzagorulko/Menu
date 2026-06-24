@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Їжа">
+<title>Їжа</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0c0c0e;
+  --bg2:#141418;
+  --bg3:#1c1c22;
+  --accent:#5aaa5a;
+  --accent2:#3d8c3d;
+  --accent-dim:rgba(90,170,90,0.12);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.04);
+  --text:#f2f2f7;
+  --text2:#ababab;
+  --text3:#666;
+  --radius:16px;
+  --radius-sm:10px;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,'SF Pro Display',sans-serif;
+  min-height:100vh;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom));
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── HEADER ── */
+.header{
+  padding:calc(env(safe-area-inset-top) + 14px) 20px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.header-left{}
+.header-greeting{font-size:13px;color:var(--text3);margin-bottom:2px}
+.header-title{font-size:26px;font-weight:700;letter-spacing:-0.5px;color:var(--text)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(12,12,14,0.92);
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  z-index:100;
+  gap:4px;
+}
+.nav-btn{
+  flex:1;
+  padding:8px 4px 6px;
+  border:none;
+  background:none;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  color:var(--text3);
+  font-size:10px;
+  font-weight:500;
+  border-radius:12px;
+  transition:all 0.15s;
+  position:relative;
+}
+.nav-btn.active{color:var(--accent)}
+.nav-btn.active .nav-icon-wrap{background:var(--accent-dim)}
+.nav-icon-wrap{
+  width:36px;height:36px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.nav-icon{font-size:18px;line-height:1}
+.nav-label{font-size:10px;letter-spacing:0.2px}
+
+/* ── PAGES ── */
+.page{display:none;padding:0 16px 16px}
+.page.active{display:block}
+
+/* ── SECTION HEADER ── */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0 10px;
+}
+.section-title{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.section-sub{font-size:13px;color:var(--text3)}
+
+/* ── CARDS ── */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:10px;
+  transition:border-color 0.2s;
+}
+.card.open{border-color:rgba(255,255,255,0.12)}
+.card-header{
+  padding:15px 16px;
+  cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  user-select:none;
+}
+.card-title{font-weight:600;font-size:15px}
+.card-desc{font-size:12px;color:var(--text3);margin-top:2px}
+.card-body{display:none;border-top:1px solid var(--border2)}
+.card.open .card-body{display:block}
+.chevron{
+  width:22px;height:22px;
+  background:var(--bg3);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--text3);
+  transition:transform 0.2s;
+  flex-shrink:0;
+}
+.card.open .chevron{transform:rotate(180deg)}
+
+/* ── ITEMS ── */
+.item{border-bottom:1px solid var(--border2)}
+.item:last-child{border-bottom:none}
+.item-header{
+  padding:12px 16px;
+  cursor:pointer;
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.item-name{font-weight:600;font-size:14px}
+.item-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center}
+.kcal-badge{font-size:11px;color:#7bc97b;background:rgba(70,160,70,0.1);border-radius:5px;padding:1px 6px}
+.prot-badge{font-size:11px;color:#7bb5d9;background:rgba(70,130,210,0.1);border-radius:5px;padding:1px 6px}
+.tag{font-size:10px;background:rgba(255,255,255,0.06);border-radius:5px;padding:1px 6px;color:var(--text3)}
+.item-body{display:none;padding:0 16px 14px;background:rgba(0,0,0,0.15)}
+.item.open .item-body{display:block}
+.item-chevron{font-size:10px;color:var(--text3);margin-top:3px;flex-shrink:0;transition:transform 0.2s}
+.item.open .item-chevron{transform:rotate(180deg)}
+
+/* ── METHOD TABS ── */
+.method-tabs{
+  display:flex;gap:6px;
+  padding-top:12px;margin-bottom:12px;
+  background:var(--bg3);
+  border-radius:var(--radius-sm);
+  padding:4px;
+  margin-top:12px;
+  margin-bottom:12px;
+}
+.mt-btn{
+  flex:1;padding:7px 4px;
+  border-radius:8px;border:none;
+  cursor:pointer;
+  background:none;
+  color:var(--text3);font-size:11px;font-weight:600;
+  transition:all 0.15s;
+}
+.mt-btn.active-g{background:#0a1a2a;color:#70b0d0}
+.mt-btn.active-s{background:#1a100a;color:#d09060}
+.mt-btn.active-o{background:#1a0a0a;color:#d06060}
+
+.time-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:20px;padding:4px 10px;
+  font-size:11px;font-weight:500;
+  margin-bottom:12px;
+}
+.tp-g{background:rgba(70,130,200,0.12);color:#70b0d0}
+.tp-s{background:rgba(200,130,70,0.12);color:#d09060}
+.tp-o{background:rgba(200,70,70,0.12);color:#d06060}
+
+/* ── LABELS & STEPS ── */
+.slabel{
+  font-size:11px;font-weight:600;
+  color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.8px;
+  margin:12px 0 7px;
+}
+.ing-item{font-size:13px;color:var(--text2);margin-bottom:4px;display:flex;gap:8px;align-items:flex-start}
+.ing-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
+.step{display:flex;gap:10px;font-size:13px;color:var(--text2);margin-bottom:7px;line-height:1.5}
+.step-num{
+  background:var(--accent-dim);
+  color:var(--accent);
+  border-radius:6px;min-width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+
+/* ── EXPAND BTNS ── */
+.xbtn{
+  width:100%;background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:9px 12px;font-size:12px;font-weight:600;
+  cursor:pointer;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:8px;color:var(--text2);
+  transition:background 0.15s;
+}
+.xbtn:active{background:rgba(255,255,255,0.08)}
+.expandable{display:none;margin-top:8px}
+.expandable.open{display:flex;flex-wrap:wrap;gap:5px}
+.expandable.open-col{display:flex;flex-direction:column;gap:4px}
+.pair-chip{
+  font-size:12px;
+  background:var(--accent-dim);
+  border:1px solid rgba(90,170,90,0.2);
+  border-radius:20px;padding:4px 10px;color:#90c090;
+}
+.sub-row{font-size:13px;color:var(--text2);padding-left:4px;display:flex;gap:6px;align-items:flex-start}
+.sub-arrow{color:var(--accent);font-size:11px;margin-top:2px}
+
+/* ── TRACKER ── */
+.tracker-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin-bottom:12px;
+}
+.tracker-date{font-size:13px;color:var(--text3);margin-bottom:4px}
+.tracker-kcal{font-size:36px;font-weight:700;letter-spacing:-1px;color:var(--text)}
+.tracker-sub{font-size:13px;color:var(--text3);margin-top:2px;margin-bottom:14px}
+.progress-wrap{background:rgba(255,255,255,0.06);border-radius:6px;height:5px;margin-bottom:16px;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;background:var(--accent);transition:width 0.4s ease}
+.stats-row{display:flex;gap:10px;margin-bottom:4px}
+.stat-box{
+  flex:1;background:var(--bg3);border-radius:12px;
+  padding:12px;text-align:center;
+}
+.stat-val{font-size:20px;font-weight:700;color:var(--text)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+
+.meal-list{margin-top:14px}
+.meal-row{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 0;
+  border-bottom:1px solid var(--border2);
+}
+.meal-row:last-child{border-bottom:none}
+.meal-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.meal-info{flex:1}
+.meal-name-t{font-size:14px;font-weight:600}
+.meal-macros{font-size:12px;color:var(--text3);margin-top:2px}
+.del-btn{
+  background:none;border:none;
+  color:rgba(255,255,255,0.15);
+  font-size:18px;cursor:pointer;
+  padding:4px 6px;
+  transition:color 0.15s;
+}
+.del-btn:active{color:#c05050}
+
+.add-meal-btn{
+  width:100%;
+  background:var(--bg3);
+  border:1px dashed rgba(90,170,90,0.25);
+  border-radius:var(--radius-sm);
+  padding:12px;
+  color:var(--accent);
+  font-size:13px;font-weight:600;
+  cursor:pointer;margin-top:10px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background 0.15s;
+}
+.add-meal-btn:active{background:var(--accent-dim)}
+
+.add-form{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  margin-top:10px;display:none;
+}
+.add-form.open{display:block}
+.form-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.form-input{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:11px 13px;
+  color:var(--text);font-size:14px;
+  outline:none;margin-bottom:10px;
+  font-family:inherit;
+  transition:border-color 0.15s;
+}
+.form-input:focus{border-color:var(--accent)}
+.form-row{display:flex;gap:8px;margin-bottom:10px}
+.form-row .form-input{margin-bottom:0;flex:1}
+.btn-row{display:flex;gap:8px}
+.btn-primary{
+  background:var(--accent);border:none;
+  border-radius:var(--radius-sm);padding:10px 18px;
+  color:#fff;font-size:13px;font-weight:700;cursor:pointer;
+  transition:opacity 0.15s;
+}
+.btn-primary:active{opacity:0.8}
+.btn-ghost{
+  background:none;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 16px;
+  color:var(--text3);font-size:13px;cursor:pointer;
+}
+
+/* ── SHOPPING ── */
+.shop-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 0 12px;
+}
+.shop-cat{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:10px;
+}
+.shop-cat-header{
+  padding:13px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.shop-cat-title{font-weight:600;font-size:14px}
+.shop-cat-count{font-size:12px;color:var(--text3)}
+.shop-items{padding:0 16px}
+.shop-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--border2);
+}
+.shop-item:last-child{border-bottom:none}
+.shop-check{
+  width:22px;height:22px;border-radius:7px;
+  border:2px solid rgba(255,255,255,0.15);
+  background:none;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.shop-check.checked{background:var(--accent);border-color:var(--accent)}
+.shop-check.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:700;line-height:1}
+.shop-item-name{font-size:14px;flex:1;transition:all 0.2s}
+.shop-item-name.done{text-decoration:line-through;color:var(--text3)}
+.del-shop{background:none;border:none;color:rgba(255,255,255,0.1);font-size:16px;cursor:pointer;padding:3px 5px;transition:color 0.15s}
+.del-shop:active{color:#c05050}
+.add-shop-row{
+  display:flex;gap:8px;
+  padding:10px 16px 14px;
+  border-top:1px solid var(--border2);
+}
+.add-shop-row .form-input{margin:0;flex:1;font-size:13px}
+.add-shop-btn{
+  background:var(--accent);border:none;
+  border-radius:var(--radius-sm);
+  width:40px;height:40px;
+  color:#fff;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+/* ── RECIPES ── */
+.recipe-add-btn{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  color:var(--accent);
+  font-size:14px;font-weight:600;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:10px;
+  transition:background 0.15s;
+}
+.recipe-add-btn:active{background:var(--bg3)}
+.recipe-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:10px;
+}
+.recipe-header{
+  padding:14px 16px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.recipe-title{font-weight:600;font-size:14px}
+.recipe-meta{font-size:12px;color:var(--text3);margin-top:3px}
+.recipe-body{display:none;padding:0 16px 14px;border-top:1px solid var(--border2)}
+.recipe-card.open .recipe-body{display:block}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  z-index:200;display:none;align-items:flex-end;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#1a1a1e;
+  border-radius:24px 24px 0 0;
+  border:1px solid var(--border);
+  border-bottom:none;
+  padding:20px 16px calc(24px + env(safe-area-inset-bottom));
+  width:100%;max-height:90vh;overflow-y:auto;
+}
+.modal-drag{
+  width:36px;height:4px;background:rgba(255,255,255,0.15);
+  border-radius:2px;margin:0 auto 18px;
+}
+.modal-title{font-weight:700;font-size:18px;margin-bottom:16px}
+
+/* ── EMPTY STATE ── */
+.empty{
+  text-align:center;padding:40px 20px;
+  color:var(--text3);font-size:14px;
+}
+.empty-icon{font-size:36px;margin-bottom:10px}
+
+/* ── COMBOS ── */
+.combo-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;
+}
+.combo-label{font-weight:700;font-size:14px;margin-bottom:6px}
+.combo-line{font-size:13px;color:var(--text2);margin-bottom:2px}
+.combo-line.sub{color:var(--text3);font-size:12px;padding-left:8px}
+.combo-footer{display:flex;gap:8px;margin-top:10px}
+.combo-chip{
+  background:var(--bg3);border-radius:20px;padding:3px 10px;
+  font-size:11px;font-weight:600;
+}
+.combo-chip.kcal{color:#7bc97b}
+.combo-chip.prot{color:#7bb5d9}
+.combo-chip.time{color:var(--text3)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-greeting">Персональний помічник</div>
+    <div class="header-title">Їжа 🥗</div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('blocks')">
+    <div class="nav-icon-wrap"><div class="nav-icon">🧩</div></div>
+    <span class="nav-label">Блоки</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('combos')">
+    <div class="nav-icon-wrap"><div class="nav-icon">🍽️</div></div>
+    <span class="nav-label">Комбо</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('tracker')">
+    <div class="nav-icon-wrap"><div class="nav-icon">📊</div></div>
+    <span class="nav-label">Трекер</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('shopping')">
+    <div class="nav-icon-wrap"><div class="nav-icon">🛒</div></div>
+    <span class="nav-label">Покупки</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('recipes')">
+    <div class="nav-icon-wrap"><div class="nav-icon">📖</div></div>
+    <span class="nav-label">Рецепти</span>
+  </button>
+</nav>
+
+<!-- PAGE: BLOCKS -->
+<div id="page-blocks" class="page active">
+  <div class="section-header">
+    <div class="section-title">Блоки</div>
+    <div class="section-sub">Готуєш × 3</div>
+  </div>
+</div>
+
+<!-- PAGE: COMBOS -->
+<div id="page-combos" class="page">
+  <div class="section-header">
+    <div class="section-title">Комбо</div>
+    <div class="section-sub">Готові поєднання</div>
+  </div>
+  <div id="combos-list"></div>
+</div>
+
+<!-- PAGE: TRACKER -->
+<div id="page-tracker" class="page">
+  <div class="section-header">
+    <div class="section-title">Трекер</div>
+  </div>
+  <div class="tracker-card">
+    <div class="tracker-date" id="tracker-date"></div>
+    <div class="tracker-kcal"><span id="t-kcal">0</span> <span style="font-size:18px;color:var(--text3)">ккал</span></div>
+    <div class="tracker-sub">Ціль: 2300 ккал · <span id="t-prot">0</span>г / 160г білка</div>
+    <div class="progress-wrap"><div class="progress-fill" id="kcal-bar" style="width:0%"></div></div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val" id="s-kcal">0</div>
+        <div class="stat-label">ккал</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="s-prot">0</div>
+        <div class="stat-label">білок г</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="s-pct">0%</div>
+        <div class="stat-label">від цілі</div>
+      </div>
+    </div>
+    <div class="meal-list" id="meal-list"></div>
+    <button class="add-meal-btn" onclick="toggleAddMeal()">
+      <span style="font-size:18px">+</span> Додати прийом їжі
+    </button>
+    <div class="add-form" id="add-meal-form">
+      <div class="form-label">Назва страви</div>
+      <input class="form-input" id="meal-name-input" placeholder="напр. Куряча грудка з гречкою">
+      <div class="form-row">
+        <div style="flex:1">
+          <div class="form-label">Калорії</div>
+          <input class="form-input" id="meal-kcal-input" type="number" placeholder="ккал">
+        </div>
+        <div style="flex:1">
+          <div class="form-label">Білок г</div>
+          <input class="form-input" id="meal-prot-input" type="number" placeholder="г">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="addMealEntry()">Додати</button>
+        <button class="btn-ghost" onclick="toggleAddMeal()">Скасувати</button>
+      </div>
+    </div>
+  </div>
+  <button class="btn-ghost" style="width:100%" onclick="clearDay()">Очистити день</button>
+</div>
+
+<!-- PAGE: SHOPPING -->
+<div id="page-shopping" class="page">
+  <div class="shop-header">
+    <div class="section-title">Покупки</div>
+    <button class="btn-ghost" style="font-size:12px;padding:6px 12px" onclick="clearChecked()">Очистити відмічені</button>
+  </div>
+  <div id="shop-list"></div>
+</div>
+
+<!-- PAGE: RECIPES -->
+<div id="page-recipes" class="page">
+  <div class="section-header">
+    <div class="section-title">Рецепти</div>
+  </div>
+  <button class="recipe-add-btn" onclick="openAddRecipe()">
+    <span style="font-size:20px">+</span> Додати свій рецепт
+  </button>
+  <div id="recipes-list"></div>
+</div>
+
+<!-- MODAL: Add Recipe -->
+<div class="modal-overlay" id="recipe-modal">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-title">Новий рецепт</div>
+    <div class="form-label">Назва</div>
+    <input class="form-input" id="r-name" placeholder="напр. Куряча грудка з овочами">
+    <div class="form-row">
+      <div style="flex:1"><div class="form-label">Ккал</div><input class="form-input" id="r-kcal" type="number" placeholder="0"></div>
+      <div style="flex:1"><div class="form-label">Білок г</div><input class="form-input" id="r-prot" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-label">Інгредієнти (кожен з нового рядка)</div>
+    <textarea class="form-input" id="r-ing" rows="4" placeholder="200г курячої грудки&#10;100г гречки&#10;сіль, спеції"></textarea>
+    <div class="form-label">Кроки приготування (кожен з нового рядка)</div>
+    <textarea class="form-input" id="r-steps" rows="4" placeholder="Промити гречку&#10;Залити водою 1:2&#10;Варити 20 хв"></textarea>
+    <div class="btn-row">
+      <button class="btn-primary" style="flex:1" onclick="saveRecipe()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeModal('recipe-modal')">Скасувати</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const BLOCKS_DATA = [
+  {
+    category: "💪 Білок",
+    color: "#1a1f2e",
+    border: "#2e4070",
+    accent: "#7090d0",
+    desc: "Готуй x3 — 4 дні в холодильнику",
+    items: [
+      {
+        name: "Куряча грудка",
+        kcal: 165, protein: 31, per: "100г",
+        tags: ["x3", "основа"],
+        pairs: ["Рис", "Гречка", "Булгур", "Сочевиця", "Броколі", "Цукіні", "Свіжий салат", "Картопля"],
+        subs: ["Стегна без шкіри — соковитіші, +трохи жиру", "Індиче філе — аналог 1:1", "Кролик — дієтичний, ніжний"],
+        methods: {
+          g: { btn: "Poultry", time: "15–20 хв", steps: ["Покласти цілою в чашу, спеції + 100мл води.", "Poultry 15–20 хв.", "Дати тиску спасти 5 хв, потім відкрити.", "Охолодити, нарізати на 3 порції."] },
+          s: { label: "Плита", time: "20–25 хв", steps: ["Нарізати кубиками або залишити цілою.", "Сковорода на середньому вогні, краплі олії.", "Обсмажити по 3–4 хв з кожного боку до золотистого.", "Накрити кришкою, ще 10 хв на малому вогні."] },
+          o: { label: "Духовка", time: "25–30 хв при 180°C", steps: ["Грудку натерти спеціями + трохи оливкової олії.", "Покласти у форму або на деко з пергаментом.", "180°C — 25–30 хв залежно від товщини.", "Перевірити зрізом — сік має бути прозорим."] },
+        },
+        ing: ["600г курячої грудки", "1 ч.л. паприки", "½ ч.л. часникового порошку", "½ ч.л. куркуми", "сіль, чорний перець", "трохи оливкової олії"]
+      },
+      {
+        name: "Курячі стегна без шкіри",
+        kcal: 185, protein: 26, per: "100г",
+        tags: ["x3", "соковиті"],
+        pairs: ["Картопля", "Гречка", "Булгур", "Морква тушкована", "Свіжий салат", "Цибуля"],
+        subs: ["Куряча грудка — менше жиру", "Яловича лопатка — більше заліза", "Кролик"],
+        methods: {
+          g: { btn: "Poultry", time: "20 хв", steps: ["Цибулю кільцями і моркву кружечками на дно.", "Зверху стегна + спеції + 100мл води.", "Poultry 20 хв. Дати тиску спасти."] },
+          s: { label: "Плита", time: "30–35 хв", steps: ["Цибулю обсмажити 3 хв на олії.", "Додати стегна, обсмажити по 4 хв з кожного боку.", "Додати 100мл води, накрити кришкою, гасити 20 хв на малому."] },
+          o: { label: "Духовка", time: "35–40 хв при 190°C", steps: ["Стегна натерти спеціями + олія.", "Покласти у форму, зверху — цибуля і морква.", "190°C — 35–40 хв. Можна прикрити фольгою перші 20 хв."] },
+        },
+        ing: ["600г стегон без шкіри", "1 цибулина", "1 морква", "сіль, паприка, розмарин", "оливкова олія"]
+      },
+      {
+        name: "Хек / Минтай / Тилапія",
+        kcal: 82, protein: 18, per: "100г",
+        tags: ["свіжа краще", "швидко"],
+        pairs: ["Броколі", "Цукіні", "Морква", "Свіжий салат", "Рис", "Картопля", "Лимон обов'язково"],
+        subs: ["Тріска — ніжніша", "Камбала — дуже швидко", "Пікша — нейтральний смак"],
+        methods: {
+          g: { btn: "Steam або Fish", time: "Steam 12 хв / Fish 5–8 хв", steps: ["Покласти в контейнер для пари.", "Steam 12–15 хв або Fish 5–8 хв (під тиском!).", "⚠️ Fish дуже швидкий — не відходь."] },
+          s: { label: "Плита (сковорода)", time: "10–12 хв", steps: ["Сковорода на середньому вогні, краплі олії.", "Рибу посолити, посипати куркумою.", "По 4–5 хв з кожного боку під кришкою.", "Збризнути лимоном після."] },
+          o: { label: "Духовка", time: "20 хв при 180°C", steps: ["Покласти філе у форму.", "Посолити, куркума, лимон зверху.", "Накрити фольгою.", "180°C — 20 хв. Риба залишається соковитою."] },
+        },
+        ing: ["200–400г філе", "сіль, куркума, чорний перець", "сік ½ лимона", "краплі оливкової олії"]
+      },
+      {
+        name: "Лосось / Форель / Скумбрія",
+        kcal: 208, protein: 20, per: "100г",
+        tags: ["омега-3", "2× на тиждень"],
+        pairs: ["Зелена квасоля", "Броколі", "Гарбуз", "Цукіні", "Лимон", "Розмарин або кріп"],
+        subs: ["Скумбрія — найближча за омега-3, дешевша", "Сардини консервовані у воді — без готування", "Оселедець слабосолений"],
+        methods: {
+          g: { btn: "Steam або Fish", time: "Steam 12 хв / Fish 5–6 хв", steps: ["В контейнер для пари.", "Розмарин + лимон зверху.", "Steam 12 хв або Fish 5–6 хв.", "Має бути ніжним, не сухим."] },
+          s: { label: "Плита (сковорода)", time: "8–10 хв", steps: ["Сковорода на середньо-сильному вогні.", "Лосось шкірою вниз — 5–6 хв.", "Перевернути, ще 2–3 хв.", "Лимон після знімання з вогню."] },
+          o: { label: "Духовка", time: "15–18 хв при 180°C", steps: ["Філе у форму шкірою вниз.", "Лимон, розмарин, краплі олії.", "180°C — 15–18 хв без фольги.", "Перевірити: м'якоть легко розшаровується — готово."] },
+        },
+        ing: ["180–360г філе", "розмарин або кріп", "сік ½ лимона", "сіль, перець", "краплі оливкової олії"]
+      },
+      {
+        name: "Яйця",
+        kcal: 155, protein: 13, per: "100г",
+        tags: ["завжди вдома", "швидко"],
+        pairs: ["Авокадо", "Свіжий салат", "Помідор", "Шпинат", "Цільнозерновий хліб", "Вівсянка"],
+        subs: ["Сир знежирений — теж швидкий білок без готування"],
+        methods: {
+          g: { btn: "Manual", time: "5 хв", steps: ["Залити водою, яйця зверху на підставці.", "Manual 5 хв — виходять всмятку.", "Холодна вода одразу."] },
+          s: { label: "Плита", time: "7–10 хв", steps: ["Всмятку: окріп, 7 хв, холодна вода.", "Яєчня: краплі олії, кришка 4 хв.", "Омлет: збити, залити, кришка 5 хв.", "Вари одразу 5–6 яєць наперед — 5 днів готового білка."] },
+          o: { label: "Духовка (запечені)", time: "12–15 хв при 180°C", steps: ["Розбити яйця в форму для кексів або невелику форму.", "Додати шпинат, помідор, спеції.", "180°C — 12–15 хв до схоплювання білка."] },
+        },
+        ing: ["2–3 яйця", "сіль", "краплі оливкової олії"]
+      },
+      {
+        name: "Тунець консервований",
+        kcal: 116, protein: 26, per: "100г",
+        tags: ["0 хв", "стратегічний запас"],
+        pairs: ["Листовий салат", "Огірок", "Черрі", "Авокадо", "Яйця варені", "Оливкова олія + лимон"],
+        subs: ["Сардини у воді — більше омега-3", "Скумбрія консервована у воді"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Нічого не потрібно. Відкрити, злити, їсти."] },
+          s: { label: "Плита", time: "0 хв", steps: ["Нічого не потрібно."] },
+          o: { label: "Духовка", time: "0 хв", steps: ["Нічого не потрібно."] },
+        },
+        ing: ["180г тунця у воді (не в олії)", "сік лимона", "перець"]
+      },
+    ]
+  },
+  {
+    category: "🌾 Вуглеводи",
+    color: "#1a150a",
+    border: "#5a4a2a",
+    accent: "#c0a060",
+    desc: "Готуй x3 — 4 дні в холодильнику",
+    items: [
+      {
+        name: "Гречка",
+        kcal: 92, protein: 3.4, per: "100г вареної",
+        tags: ["x3", "класика"],
+        pairs: ["Куряча грудка", "Стегна", "Тушкована морква і цибуля", "Свіжий салат"],
+        subs: ["Рис — нейтральніший смак", "Булгур — нижчий ГІ", "Кіноа — більше білка"],
+        methods: {
+          g: { btn: "Multigrain", time: "15–20 хв", steps: ["250г гречки + 450мл води + сіль.", "Multigrain 15–20 хв.", "Виходить ~750г — 3 порції."] },
+          s: { label: "Плита", time: "20 хв", steps: ["250г гречки промити.", "Залити 500мл окропу, посолити.", "Кришка, малий вогонь, 15–18 хв.", "Дати постояти 5 хв під рушником."] },
+          o: { label: "Духовка", time: "40 хв при 180°C", steps: ["Гречку в керамічну форму з кришкою.", "Залити окропом 1:2, посолити.", "180°C — 40 хв. Виходить дуже розсипчаста."] },
+        },
+        ing: ["250г гречки", "500мл води", "сіль"]
+      },
+      {
+        name: "Рис",
+        kcal: 130, protein: 2.7, per: "100г вареного",
+        tags: ["x3"],
+        pairs: ["Куряча грудка", "Риба", "Тушковані овочі", "Сочевиця"],
+        subs: ["Гречка", "Булгур", "Перловка — дуже ситна"],
+        methods: {
+          g: { btn: "Rice", time: "12–15 хв", steps: ["250г рису + 400мл води + сіль.", "Rice 12–15 хв.", "Дати постояти 5 хв після сигналу."] },
+          s: { label: "Плита", time: "20 хв", steps: ["Промити рис до прозорої води.", "1:2 вода, довести до кипіння.", "Малий вогонь, кришка, 18 хв. Не відкривати!", "Дати постояти 5 хв."] },
+          o: { label: "Духовка", time: "35 хв при 180°C", steps: ["Рис у форму з кришкою або фольгою.", "Залити окропом 1:1.5, посолити.", "180°C — 35 хв."] },
+        },
+        ing: ["250г рису", "450мл води", "сіль"]
+      },
+      {
+        name: "Картопля",
+        kcal: 77, protein: 2, per: "100г",
+        tags: ["x3", "ситна"],
+        pairs: ["Стегна", "Грудка", "Риба", "Цибуля тушкована", "Часник", "Зелень"],
+        subs: ["Батат — нижчий ГІ", "Булгур — менше калорій"],
+        methods: {
+          g: { btn: "Manual або Steam", time: "10–12 хв", steps: ["Нарізати кубиками + 100мл води.", "Manual 10–12 хв — дуже швидко під тиском."] },
+          s: { label: "Плита", time: "20–25 хв", steps: ["Нарізати кубиками, залити водою.", "Варити після закипання 20–25 хв.", "Перевірити виделкою — має легко входити."] },
+          o: { label: "Духовка (запечена)", time: "35–40 хв при 200°C", steps: ["Нарізати часточками, посолити, паприка.", "Краплі оливкової олії, перемішати.", "200°C — 35–40 хв, перевернути раз в середині."] },
+        },
+        ing: ["600г картоплі", "сіль", "оливкова олія", "паприка або розмарин"]
+      },
+      {
+        name: "Вівсянка",
+        kcal: 68, protein: 2.4, per: "100г готової",
+        tags: ["сніданок", "10 хв"],
+        pairs: ["Протеїн (після охолодження)", "Горіхи", "Яблуко", "Кориця", "Яйця окремо"],
+        subs: ["Сирники якщо хочеться щось інше"],
+        methods: {
+          g: { btn: "Porridge", time: "10 хв", steps: ["60г пластівців + 250мл мигдального молока.", "Porridge 10 хв.", "Дати охолонути 2 хв, потім вмішати протеїн."] },
+          s: { label: "Плита", time: "7 хв", steps: ["60г пластівців + 250мл мигдального молока.", "Середній вогонь, помішувати 5–7 хв.", "Зняти з вогню, дати охолонути 2 хв.", "Вмішати ½ мірки протеїну + горіхи + кориця."] },
+          o: { label: "Духовка (overnight oats)", time: "0 хв зранку", steps: ["Ввечері: 60г пластівців + 200мл мигдального молока в банку.", "Закрити, в холодильник.", "Вранці — готово. Їсти холодним або підігріти 1 хв."] },
+        },
+        ing: ["60г вівсяних пластівців", "250мл мигдального молока без цукру", "кориця", "20г горіхів"]
+      },
+    ]
+  },
+  {
+    category: "🫘 Бобові",
+    color: "#1a1a0a",
+    border: "#4a4a2a",
+    accent: "#b0b060",
+    desc: "Готуй велику порцію — 4 дні в холодильнику",
+    items: [
+      {
+        name: "Червона сочевиця",
+        kcal: 116, protein: 9, per: "100г вареної",
+        tags: ["x4", "шкіра", "цинк"],
+        pairs: ["Куряча грудка", "Куркума обов'язково", "Морква", "Цибуля", "Часник", "Рис поруч"],
+        subs: ["Зелена сочевиця — тримає форму", "Нут консервований — без готування", "Квасоля консервована"],
+        methods: {
+          g: { btn: "Soup або Beans/Chili", time: "15–20 хв", steps: ["200г сочевиці + овочі + 600мл води + спеції.", "Soup або Beans/Chili 15–20 хв.", "Розвариться до густої консистенції — 4 порції."] },
+          s: { label: "Плита", time: "20–25 хв", steps: ["Цибулю і моркву обсмажити 3 хв.", "Додати сочевицю + воду 1:2.5 + спеції.", "Варити після закипання 20–25 хв помішуючи.", "Червона розвариться в пюре — це нормально."] },
+          o: { label: "Духовка", time: "45 хв при 180°C", steps: ["Все скласти в керамічну форму з кришкою.", "Сочевиця + овочі + вода 1:3 + спеції.", "180°C — 45 хв під кришкою."] },
+        },
+        ing: ["200г червоної сочевиці", "1 морква", "1 цибулина", "2 зубчики часнику", "600мл води", "1 ч.л. куркуми", "сіль, паприка"]
+      },
+      {
+        name: "Зелена сочевиця",
+        kcal: 116, protein: 9, per: "100г вареної",
+        tags: ["x4", "тримає форму"],
+        pairs: ["Лосось", "Риба", "Цибуля", "Морква", "Часник", "Лавровий лист"],
+        subs: ["Червона сочевиця — розвариться в пюре", "Нут — Beans/Chili 25 хв"],
+        methods: {
+          g: { btn: "Beans/Chili", time: "20–25 хв", steps: ["200г сочевиці + 600мл води + лаврушка + куркума + сіль.", "Beans/Chili 20–25 хв. Тримає форму."] },
+          s: { label: "Плита", time: "30–35 хв", steps: ["Залити водою 1:2.5, довести до кипіння.", "Малий вогонь, кришка, 30–35 хв.", "Перевірити — має бути м'якою але цілою."] },
+          o: { label: "Духовка", time: "50 хв при 180°C", steps: ["Форма з кришкою, вода 1:3.", "180°C — 50 хв."] },
+        },
+        ing: ["200г зеленої сочевиці", "600мл води", "лавровий лист", "½ ч.л. куркуми", "сіль"]
+      },
+    ]
+  },
+  {
+    category: "🥦 Овочі",
+    color: "#0a1a0a",
+    border: "#2a5a2a",
+    accent: "#70b070",
+    desc: "Steam, духовка або сковорода — 10–15 хв",
+    items: [
+      {
+        name: "Броколі / Цвітна капуста",
+        kcal: 34, protein: 2.8, per: "100г",
+        tags: ["швидко", "Steam"],
+        pairs: ["Куряча грудка", "Риба будь-яка", "Яйця", "Часник", "Лимон"],
+        subs: ["Цукіні — ще швидше", "Стручкова квасоля"],
+        methods: {
+          g: { btn: "Steam", time: "10–12 хв", steps: ["Розібрати на суцвіття.", "Steam 10–12 хв.", "Часник + лимон після."] },
+          s: { label: "Плита (бланш)", time: "5–7 хв", steps: ["Окріп + сіль.", "Кинути броколі, варити 5 хв.", "Злити, одразу холодна вода — зберігає колір."] },
+          o: { label: "Духовка (запечена)", time: "20 хв при 200°C", steps: ["Суцвіття на деко, краплі олії, сіль, паприка.", "200°C — 20 хв. Злегка підрум'яниться.", "Набагато смачніше ніж варена."] },
+        },
+        ing: ["200–400г броколі", "2 зубчики часнику", "сіль, лимон", "краплі оливкової олії"]
+      },
+      {
+        name: "Рататуй (курка + овочі)",
+        kcal: 90, protein: 8, per: "100г",
+        tags: ["x3", "закинув і пішов"],
+        pairs: ["Рис або хліб поруч", "Свіжий салат", "Сир фета зверху"],
+        subs: ["Без м'яса — просто овочевий гарнір"],
+        methods: {
+          g: { btn: "Slow Cook", time: "2–3 год", steps: ["Все нарізати кубиками, скласти шарами.", "Slow Cook Low — 2–3 год.", "Ніякої води — овочі дадуть сік самі."] },
+          s: { label: "Плита", time: "35–40 хв", steps: ["Цибулю обсмажити 3 хв.", "Додати курку, обсмажити 5 хв.", "Додати всі овочі, накрити кришкою.", "Малий вогонь 30 хв, іноді помішувати."] },
+          o: { label: "Духовка", time: "50 хв при 180°C", steps: ["Все скласти у форму, перемішати зі спеціями.", "180°C — 50 хв під кришкою або фольгою.", "Останні 10 хв — зняти кришку."] },
+        },
+        ing: ["200г курячої грудки", "½ баклажана", "½ цукіні", "2 помідори", "1 цибулина", "часник", "сіль, паприка, базилік"]
+      },
+      {
+        name: "Запечені овочі мікс",
+        kcal: 55, protein: 2, per: "100г",
+        tags: ["духовка", "x3", "смачно"],
+        pairs: ["Будь-яке м'ясо", "Риба", "Гречка", "Сир фета зверху"],
+        subs: ["Будь-які сезонні овочі що є вдома"],
+        methods: {
+          g: { btn: "Steam", time: "15 хв", steps: ["Нарізати кубиками, Steam 15 хв.", "Менш смачно ніж духовка — але швидко."] },
+          s: { label: "Плита (сотейник)", time: "20 хв", steps: ["Цибулю обсмажити 2 хв.", "Додати решту овочів, сіль + спеції.", "Середній вогонь під кришкою 15–18 хв."] },
+          o: { label: "Духовка ⭐", time: "30–35 хв при 200°C", steps: ["Нарізати все кубиками 2–3 см.", "Викласти на деко, не перекладати щільно.", "Полити оливковою олією, посолити, паприка.", "200°C — 30–35 хв, перемішати раз в середині.", "Виходять злегка хрусткі з краями — дуже смачно."] },
+        },
+        ing: ["1 перець болгарський", "1 цукіні", "1 морква", "1 червона цибулина", "200г черрі", "2 зубчики часнику", "оливкова олія", "сіль, паприка, орегано"]
+      },
+      {
+        name: "Шпинат / Руккола тушкована",
+        kcal: 23, protein: 2.9, per: "100г",
+        tags: ["5 хв", "залізо"],
+        pairs: ["Яйця (омлет)", "Куряча грудка", "Лосось", "Часник обов'язково", "Лимон"],
+        subs: ["Мангольд", "Шпинат заморожений — ще простіше"],
+        methods: {
+          g: { btn: "Sear", time: "3–4 хв", steps: ["Режим Sear, краплі олії.", "Часник 1 хв, потім шпинат.", "Помішувати 2–3 хв до зменшення об'єму."] },
+          s: { label: "Плита ⭐", time: "3–4 хв", steps: ["Сковорода, краплі олії, часник 1 хв.", "Кинути шпинат — він зменшиться в 5 разів.", "Помішувати 2–3 хв.", "Сіль + лимон після."] },
+          o: { label: "Не рекомендується", time: "—", steps: ["Шпинат краще на плиті — дуже швидко."] },
+        },
+        ing: ["150–200г шпинату (свіжого або замороженого)", "2 зубчики часнику", "краплі оливкової олії", "сіль, лимон"]
+      },
+      {
+        name: "Гарбуз запечений",
+        kcal: 45, protein: 1, per: "100г",
+        tags: ["духовка", "солодкий"],
+        pairs: ["Лосось", "Форель", "Куряча грудка", "Кориця (солодкий варіант)", "Фета зверху"],
+        subs: ["Батат — схожа текстура і смак", "Морква запечена"],
+        methods: {
+          g: { btn: "Steam або Manual", time: "10–12 хв", steps: ["Нарізати кубиками.", "Steam 10–12 хв або Manual 8 хв."] },
+          s: { label: "Плита", time: "20 хв", steps: ["Кубиками в сотейник, 50мл води.", "Накрити кришкою, середній вогонь 15–20 хв."] },
+          o: { label: "Духовка ⭐", time: "30–35 хв при 190°C", steps: ["Нарізати часточками або кубиками.", "Оливкова олія + сіль + паприка або кориця.", "190°C — 30–35 хв.", "Карамелізується — стає солодким і ніжним."] },
+        },
+        ing: ["300г гарбуза", "оливкова олія", "сіль", "паприка або кориця"]
+      },
+      {
+        name: "Стручкова квасоля",
+        kcal: 31, protein: 1.8, per: "100г",
+        tags: ["швидко", "клітковина"],
+        pairs: ["Лосось", "Куряча грудка", "Яйця", "Часник + лимон"],
+        subs: ["Броколі — аналогічно", "Спаржа — якщо знайдеш"],
+        methods: {
+          g: { btn: "Steam", time: "8 хв", steps: ["Steam 8 хв. Часник + лимон після."] },
+          s: { label: "Плита", time: "7–8 хв", steps: ["Окріп + сіль.", "Квасоля 7–8 хв.", "Злити, холодна вода, зберігає хруст."] },
+          o: { label: "Духовка", time: "20 хв при 200°C", steps: ["На деко, олія + часник + сіль.", "200°C — 20 хв. Стає трохи хрусткою."] },
+        },
+        ing: ["200г стручкової квасолі (свіжої або замороженої)", "часник", "сіль", "лимон"]
+      },
+      {
+        name: "Морква + цибуля тушкована",
+        kcal: 42, protein: 1, per: "100г",
+        tags: ["гарнір", "x3"],
+        pairs: ["Гречка", "М'ясо будь-яке", "Сочевиця", "Риба"],
+        subs: ["Додай селеру для смаку", "Додай помідор — стане соусом"],
+        methods: {
+          g: { btn: "Sear → Soup", time: "15 хв", steps: ["Sear: цибулю 3 хв.", "Додати моркву, 200мл води.", "Soup 10 хв."] },
+          s: { label: "Плита ⭐", time: "20 хв", steps: ["Цибулю кільцями на олії 3 хв.", "Додати моркву кружечками.", "100мл води, кришка, 15 хв на малому вогні."] },
+          o: { label: "Духовка", time: "30 хв при 180°C", steps: ["У форму, олія + вода 50мл.", "180°C — 30 хв під фольгою."] },
+        },
+        ing: ["3 моркви", "2 цибулини", "оливкова олія", "сіль, чорний перець, лавровий лист"]
+      },
+      {
+        name: "Батат запечений",
+        kcal: 86, protein: 1.6, per: "100г",
+        tags: ["духовка ⭐", "нижчий ГІ ніж картопля"],
+        pairs: ["Куряча грудка", "Лосось", "Яйця", "Кориця (солодкий варіант)", "Фета + руккола зверху"],
+        subs: ["Картопля — якщо немає батату", "Гарбуз — схожа текстура"],
+        methods: {
+          g: { btn: "Manual", time: "12 хв", steps: ["Нарізати кубиками.", "Manual 12 хв + 100мл води."] },
+          s: { label: "Плита", time: "20 хв", steps: ["Кубиками в сотейник, 50мл води.", "Кришка, середній вогонь 18–20 хв."] },
+          o: { label: "Духовка ⭐", time: "35 хв при 200°C", steps: ["Нарізати часточками, олія + паприка + сіль.", "200°C — 35 хв, перевернути раз.", "Карамелізується, стає солодким."] },
+        },
+        ing: ["400г батату", "оливкова олія", "сіль", "паприка або кориця"]
+      },
+      {
+        name: "Цукіні на грилі / сковороді",
+        kcal: 17, protein: 1.2, per: "100г",
+        tags: ["5 хв", "легкий гарнір"],
+        pairs: ["Риба будь-яка", "Куряча грудка", "Яйця", "Лимон + часник", "Фета зверху"],
+        subs: ["Баклажан — схожа готовка", "Кабачок — аналог цукіні"],
+        methods: {
+          g: { btn: "Steam або Sear", time: "5–8 хв", steps: ["Steam 8 хв або Sear кружечками 3 хв.", "Часник + лимон після."] },
+          s: { label: "Плита (гриль-сковорода) ⭐", time: "6–8 хв", steps: ["Нарізати кружечками 1 см.", "Гриль-сковорода без олії на сильному вогні.", "По 2–3 хв з кожного боку.", "Виходять смужки — дуже апетитно."] },
+          o: { label: "Духовка", time: "20 хв при 200°C", steps: ["Кружечками на деко, олія + сіль.", "200°C — 20 хв. Злегка підрум'яниться."] },
+        },
+        ing: ["2 цукіні", "краплі оливкової олії", "сіль, часник", "лимон"]
+      },
+      {
+        name: "Баклажан запечений",
+        kcal: 25, protein: 1, per: "100г",
+        tags: ["духовка", "ситний овоч"],
+        pairs: ["Куряча грудка", "Помідор + часник", "Фета", "Томатний соус", "Гречка"],
+        subs: ["Цукіні — готується швидше", "Кабачок"],
+        methods: {
+          g: { btn: "Slow Cook або Stew", time: "30 хв", steps: ["Нарізати кубиками.", "Slow Cook з помідорами і часником 1–2 год."] },
+          s: { label: "Плита", time: "15 хв", steps: ["Кубиками на сковороду, краплі олії.", "Середній вогонь 12–15 хв, помішувати.", "Солити в кінці — тоді не гірчить."] },
+          o: { label: "Духовка ⭐", time: "25 хв при 200°C", steps: ["Нарізати кубиками або навпіл.", "Зробити насічки на м'якоті, оливкова олія + часник + сіль.", "200°C — 25 хв.", "Виходить ніжний, майже кремовий."] },
+        },
+        ing: ["1 великий баклажан", "2 зубчики часнику", "оливкова олія", "сіль", "орегано або базилік"]
+      },
+      {
+        name: "Болгарський перець запечений",
+        kcal: 31, protein: 1, per: "100г",
+        tags: ["духовка", "вітамін C"],
+        pairs: ["Куряча грудка", "Риба", "Яйця", "Фета", "Гречка або рис"],
+        subs: ["Свіжий перець у салат", "Чилі якщо любиш гостре"],
+        methods: {
+          g: { btn: "Steam або Sear", time: "10 хв", steps: ["Нарізати смужками.", "Steam 10 хв або Sear 5 хв."] },
+          s: { label: "Плита", time: "8 хв", steps: ["Смужками на сковороду + краплі олії.", "Середній вогонь 8 хв до м'якості."] },
+          o: { label: "Духовка ⭐", time: "30–35 хв при 200°C", steps: ["Цілими або половинками на деко.", "Краплі олії.", "200°C — 30–35 хв.", "Шкірка обвугліється — зняти після, м'якоть стає солодкою."] },
+        },
+        ing: ["3–4 болгарських перці", "краплі оливкової олії", "сіль"]
+      },
+      {
+        name: "Черрі-помідори запечені",
+        kcal: 18, protein: 0.9, per: "100г",
+        tags: ["духовка", "як соус"],
+        pairs: ["Куряча грудка", "Яйця (шакшука)", "Гречка", "Риба", "Сир фета зверху"],
+        subs: ["Звичайні помідори — нарізати навпіл"],
+        methods: {
+          g: { btn: "Sear", time: "5 хв", steps: ["Sear черрі цілими 5 хв — полопаються і дадуть сік."] },
+          s: { label: "Плита", time: "5–7 хв", steps: ["Сковорода, краплі олії.", "Черрі цілими, помішувати 5–7 хв.", "Полопаються — виходить густий соус."] },
+          o: { label: "Духовка ⭐", time: "20 хв при 200°C", steps: ["Черрі цілими на деко.", "Краплі олії + часник + сіль + орегано.", "200°C — 20 хв.", "Виходять карамелізовані, дуже смачні."] },
+        },
+        ing: ["250г черрі-помідорів", "2 зубчики часнику", "краплі оливкової олії", "сіль, орегано або базилік"]
+      },
+    ]
+  },
+  {
+    category: "🥗 Салати",
+    color: "#0a120a",
+    border: "#1a3a1a",
+    accent: "#60a060",
+    desc: "Завжди свіжий — 5 хв, не зберігається",
+    items: [
+      {
+        name: "Базовий салат",
+        kcal: 60, protein: 2, per: "порція",
+        tags: ["5 хв", "щодня"],
+        pairs: ["До будь-якого обіду чи вечері", "Особливо добре з куркою та рибою"],
+        subs: ["+ авокадо (більше жирів)", "+ тунець (і це вже вечеря)"],
+        methods: {
+          g: { btn: "—", time: "5 хв", steps: ["Нарізати огірок, помідор, перець.", "Листовий салат порвати руками.", "Олія + лимон + сіль. Перемішати."] },
+          s: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+        },
+        ing: ["1 огірок", "1 помідор", "½ болгарського перцю", "листовий салат", "1 ст.л. оливкової олії", "сік ½ лимона", "сіль"]
+      },
+      {
+        name: "Салат з тунцем і авокадо",
+        kcal: 320, protein: 28, per: "порція",
+        tags: ["вечеря", "без готування"],
+        pairs: ["Цільнозерновий хліб 1 скибка", "Яйця додатково"],
+        subs: ["Тунець → варені яйця 2 шт", "Авокадо → оливки 10 шт"],
+        methods: {
+          g: { btn: "—", time: "5 хв", steps: ["Тунець злити, розім'яти.", "Авокадо нарізати кубиками, збризнути лимоном.", "Все змішати з листовим салатом + черрі.", "Олія + лимон + сіль."] },
+          s: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+        },
+        ing: ["180г тунця у воді", "½ авокадо", "листовий салат", "8 черрі", "1 огірок", "1 ст.л. оливкової олії", "лимон"]
+      },
+      {
+        name: "Грецький салат",
+        kcal: 120, protein: 5, per: "порція",
+        tags: ["10 хв", "ситніший"],
+        pairs: ["Куряча грудка", "Риба на грилі", "Пита або хліб"],
+        subs: ["Без фети — звичайний овочевий", "Оливки замість фети"],
+        methods: {
+          g: { btn: "—", time: "10 хв", steps: ["Помідори, огірок, перець, червону цибулю нарізати.", "Оливки додати.", "Фету покришити зверху.", "Оливкова олія + орегано + сіль. Не перемішувати — подавати шарами."] },
+          s: { label: "Без готування", time: "10 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "10 хв", steps: ["Те саме."] },
+        },
+        ing: ["2 помідори", "1 огірок", "1 перець", "½ червоної цибулини", "50г сиру фета", "10 оливок", "оливкова олія", "орегано", "сіль"]
+      },
+      {
+        name: "Салат з запеченими овочами",
+        kcal: 110, protein: 3, per: "порція",
+        tags: ["15 хв", "тепло або холодно"],
+        pairs: ["Куряча грудка", "Лосось", "Фета або яйця зверху"],
+        subs: ["Будь-які овочі що є"],
+        methods: {
+          g: { btn: "—", time: "15 хв", steps: ["Запечені овочі (з холодильника або свіжі) + руккола або листовий салат.", "Оливкова олія + бальзамічний оцет + сіль.", "Їсти теплим або холодним."] },
+          s: { label: "Без готування", time: "2 хв", steps: ["Якщо овочі вже готові — просто змішати."] },
+          o: { label: "Без готування", time: "2 хв", steps: ["Те саме."] },
+        },
+        ing: ["150г запечених овочів мікс", "руккола або листовий салат", "1 ст.л. оливкової олії", "½ ч.л. бальзамічного оцту", "сіль"]
+      },
+    ]
+  },
+  {
+    category: "🥜 Перекуси",
+    color: "#1a0a0a",
+    border: "#5a2a2a",
+    accent: "#c07070",
+    desc: "0–2 хвилини",
+    items: [
+      {
+        name: "Протеїновий шейк",
+        kcal: 160, protein: 24, per: "порція",
+        tags: ["після тренування", "1 хв"],
+        pairs: ["Банан після тренування окремо", "Горіхи окремо"],
+        subs: ["На воді якщо немає молока", "½ мірки в охолоджену вівсянку"],
+        methods: {
+          g: { btn: "—", time: "1 хв", steps: ["Шейкер: мигдальне молоко + протеїн. Струснути."] },
+          s: { label: "Без готування", time: "1 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "1 хв", steps: ["Те саме."] },
+        },
+        ing: ["1 мірка (30г) BioTech Pure Whey горіховий", "250мл мигдального молока без цукру"]
+      },
+      {
+        name: "Яйця + горіхи",
+        kcal: 260, protein: 18, per: "порція",
+        tags: ["0 хв", "заздалегідь"],
+        pairs: ["Огірок або яблуко", "Хліб цільнозерновий 1 скибка"],
+        subs: ["+ ½ авокадо для жирів"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Яйця зварити наперед (5–6 штук на плиті 10 хв).", "Зберігати нечищеними до 5 днів."] },
+          s: { label: "Плита", time: "10 хв (наперед)", steps: ["Окріп, яйця, 10 хв, холодна вода.", "Зберігати нечищеними до 5 днів."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Яйця вже зварені."] },
+        },
+        ing: ["2 зварених яйця", "20г мигдалю або волоських горіхів"]
+      },
+      {
+        name: "Авокадо + яйця",
+        kcal: 300, protein: 16, per: "порція",
+        tags: ["5 хв", "корисні жири"],
+        pairs: ["Цільнозерновий хліб", "Листовий салат", "Черрі зверху"],
+        subs: ["Без авокадо → яйця + горіхи", "Додай тунець → повноцінний обід"],
+        methods: {
+          g: { btn: "—", time: "5 хв", steps: ["Яйця зварити наперед.", "Авокадо розрізати навпіл, видалити кісточку.", "Збризнути лимоном, посолити.", "Їсти ложкою зі шкірки + яйця поруч."] },
+          s: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+        },
+        ing: ["½ авокадо", "2 варених яйця", "сік ¼ лимона", "сіль, чорний перець"]
+      },
+      {
+        name: "Грецький йогурт натуральний",
+        kcal: 100, protein: 10, per: "150г",
+        tags: ["без готування", "пробіотики"],
+        pairs: ["Горіхи", "Насіння льону або чіа", "Яблуко або ягоди (трохи)"],
+        subs: ["Сир знежирений — більше білка", "⚠️ НЕ Активія — багато цукру"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Купуй iaurt grecesc або iaurt natural у Kaufland/Carrefour.", "Без фруктових добавок — тільки молоко і закваска в складі.", "Додати горіхи + насіння льону замість цукру."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["150г грецького йогурту 0–2%", "15г горіхів", "1 ч.л. насіння льону або чіа"]
+      },
+      {
+        name: "Хумус + овочі",
+        kcal: 200, protein: 7, per: "порція",
+        tags: ["без готування", "ситний"],
+        pairs: ["Морквяні палички", "Огірок", "Перець", "Цільнозерновий хліб"],
+        subs: ["Зробити самому — нут + тахіні + лимон + часник у блендері"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Купити готовий хумус (без цукру в складі).", "Нарізати овочі паличками.", "Макати — і це повноцінний перекус."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["100г хумусу", "1 морква паличками", "½ огірка паличками", "½ перцю паличками"]
+      },
+      {
+        name: "Насіння + горіхи мікс",
+        kcal: 180, protein: 5, per: "30г",
+        tags: ["0 хв", "завжди вдома"],
+        pairs: ["Йогурт", "Вівсянка", "Фрукт"],
+        subs: ["Будь-які горіхи несолоні"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Змішай наперед у банку: мигдаль + волоські + насіння гарбуза + насіння льону.", "Тримай на видному місці.", "Одна жменя = перекус."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["10г мигдалю", "10г волоських горіхів", "5г насіння гарбуза", "5г насіння льону"]
+      },
+      {
+        name: "Рисові або кукурудзяні хлібці + авокадо",
+        kcal: 180, protein: 4, per: "порція",
+        tags: ["0 хв", "швидко"],
+        pairs: ["Тунець зверху", "Яйця", "Хумус", "Огірок"],
+        subs: ["Цільнозерновий хліб — ситніше", "Просто авокадо без хлібця"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Хлібці + авокадо розім'яти виделкою.", "Сіль + лимон + чилі.", "Можна додати тунець або яйце зверху."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["3–4 рисових хлібці", "½ авокадо", "сіль, лимон", "чилі (за бажанням)"]
+      },
+      {
+        name: "Огірок + хумус",
+        kcal: 130, protein: 5, per: "порція",
+        tags: ["0 хв", "хрусткий"],
+        pairs: ["Яйця", "Тунець", "Будь-який білок"],
+        subs: ["Морква палички замість огірка", "Перець палички"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Огірок нарізати паличками.", "Макати в хумус.", "Готово."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["1 огірок", "80г хумусу без цукру в складі", "сіль, паприка"]
+      },
+      {
+        name: "Сир знежирений + насіння чіа",
+        kcal: 130, protein: 20, per: "порція",
+        tags: ["0 хв", "багато білка"],
+        pairs: ["Горіхи", "Яблуко або ягоди", "Кориця"],
+        subs: ["Грецький йогурт натуральний", "Протеїн вмішати замість чіа"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["150г сиру + 1 ч.л. насіння чіа + кориця.", "Дати постояти 5 хв — чіа набухнуть.", "Додати горіхи зверху."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["150г знежиреного сиру", "1 ч.л. насіння чіа", "кориця", "10г горіхів"]
+      },
+      {
+        name: "Банан + арахісова паста",
+        kcal: 220, protein: 6, per: "порція",
+        tags: ["після тренування", "швидкі вуглеводи + жири"],
+        pairs: ["Тільки після тренування або перед", "Протеїновий шейк окремо"],
+        subs: ["Яблуко + мигдальна паста", "Банан + горіхи"],
+        methods: {
+          g: { btn: "—", time: "0 хв", steps: ["Банан + 1 ст.л. арахісової пасти без цукру.", "Тільки після тренування — швидкі вуглеводи + білок.", "НЕ в спокійний день — замість цього яблуко + горіхи."] },
+          s: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "0 хв", steps: ["Те саме."] },
+        },
+        ing: ["1 банан", "1 ст.л. арахісової пасти (100% арахіс, без цукру і пальмової олії)"]
+      },
+    ]
+  },
+  {
+    category: "🫙 Соуси та заправки",
+    color: "#1a0a1a",
+    border: "#4a2a4a",
+    accent: "#c080c0",
+    desc: "Роблять їжу нескучною — 2–5 хв",
+    items: [
+      {
+        name: "Часниково-лимонна заправка",
+        kcal: 90, protein: 0, per: "2 ст.л.",
+        tags: ["2 хв", "до всього"],
+        pairs: ["Броколі", "Риба", "Курка", "Салати", "Картопля"],
+        subs: ["Без лимона → оцет яблучний", "Додай гірчицю → стане вінегрет"],
+        methods: {
+          g: { btn: "—", time: "2 хв", steps: ["Змішати всі інгредієнти в баночці.", "Зберігати в холодильнику до 5 днів.", "Струшувати перед використанням."] },
+          s: { label: "Без готування", time: "2 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "2 хв", steps: ["Те саме."] },
+        },
+        ing: ["3 ст.л. оливкової олії", "сік 1 лимона", "1 зубчик часнику (подрібнений)", "сіль, чорний перець", "½ ч.л. орегано або базиліку"]
+      },
+      {
+        name: "Томатний соус швидкий",
+        kcal: 40, protein: 1.5, per: "100г",
+        tags: ["10 хв", "до рису і гречки"],
+        pairs: ["Рис", "Гречка", "Куряча грудка", "Сочевиця"],
+        subs: ["Консервовані томати замість свіжих — ще простіше"],
+        methods: {
+          g: { btn: "Sear", time: "10 хв", steps: ["Sear: часник 1 хв на краплі олії.", "Додати помідори нарізані або консервовані.", "Сіль + базилік + щіпка паприки.", "Помішувати 8–10 хв до загустіння."] },
+          s: { label: "Плита ⭐", time: "10 хв", steps: ["Часник на олії 1 хв.", "Помідори нарізати, додати в сковороду.", "Базилік, сіль, щіпка цукру.", "Середній вогонь 8–10 хв. Готово."] },
+          o: { label: "Не підходить", time: "—", steps: ["Краще на плиті."] },
+        },
+        ing: ["3–4 помідори або 1 банка консервованих", "2 зубчики часнику", "краплі оливкової олії", "базилік", "сіль", "щіпка паприки"]
+      },
+      {
+        name: "Тахіні соус",
+        kcal: 110, protein: 3, per: "2 ст.л.",
+        tags: ["2 хв", "до риби і овочів"],
+        pairs: ["Риба запечена", "Броколі", "Морква", "Салати", "Хумус"],
+        subs: ["Арахісова паста (без цукру) — схожа текстура"],
+        methods: {
+          g: { btn: "—", time: "2 хв", steps: ["Змішати тахіні + лимон + вода + часник.", "Якщо густо — додати більше води.", "Зберігати до 1 тижня в холодильнику."] },
+          s: { label: "Без готування", time: "2 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "2 хв", steps: ["Те саме."] },
+        },
+        ing: ["2 ст.л. тахіні (кунжутна паста)", "сік ½ лимона", "1 зубчик часнику", "2–3 ст.л. холодної води", "сіль"]
+      },
+      {
+        name: "Гуакамоле просте",
+        kcal: 150, protein: 2, per: "порція",
+        tags: ["5 хв", "корисні жири"],
+        pairs: ["Яйця", "Риба", "Курка", "Овочеві палички", "Хліб цільнозерновий"],
+        subs: ["Просто авокадо з лимоном і сіллю — ще простіше"],
+        methods: {
+          g: { btn: "—", time: "5 хв", steps: ["Авокадо розім'яти виделкою.", "Додати решту, перемішати.", "Їсти одразу — темніє через 2 год."] },
+          s: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+          o: { label: "Без готування", time: "5 хв", steps: ["Те саме."] },
+        },
+        ing: ["1 авокадо", "сік ½ лимона", "1 помідор дрібно", "сіль, чорний перець", "½ зубчика часнику (за бажанням)"]
+      },
+    ]
+  },
+
+  {
+    category: "✨ Цікаве",
+    color: "#1a0f1a",
+    border: "#4a2a5a",
+    accent: "#c080e0",
+    desc: "Нестандартні страви — не нудно",
+    items: [
+      {
+        name: "Шакшука (яйця в томатному соусі)",
+        kcal: 210, protein: 14, per: "порція",
+        tags: ["15 хв", "сніданок або вечеря"],
+        pairs: ["Цільнозерновий хліб", "Фета зверху", "Руккола поруч"],
+        subs: ["Без яєць → просто томатний соус з куркою"],
+        methods: {
+          g: { btn: "Sear → Keep Warm", time: "15 хв", steps: ["Sear: часник + цибуля 2 хв.", "Додати помідори черрі, паприку, кумін.", "Помішувати 5 хв.", "Зробити ямки, розбити яйця.", "Накрити, Keep Warm 5–7 хв до схоплювання білка."] },
+          s: { label: "Плита ⭐", time: "15 хв", steps: ["Сковорода з кришкою. Часник + цибуля 2 хв на олії.", "Черрі або консервовані помідори, паприка, кумін, сіль.", "Тушкувати 7 хв до загустіння.", "Зробити ямки ложкою, вбити яйця.", "Кришка, малий вогонь 5 хв."] },
+          o: { label: "Духовка", time: "25 хв", steps: ["Приготувати соус на плиті 10 хв.", "Перелити в жароміцну форму.", "Зробити ямки, вбити яйця.", "200°C — 8–10 хв до схоплювання."] },
+        },
+        ing: ["3 яйця", "250г черрі або консервованих помідорів", "1 цибулина", "2 зубчики часнику", "½ ч.л. паприки", "½ ч.л. кумін", "сіль, чорний перець", "петрушка зверху"]
+      },
+      {
+        name: "Протеїнові млинці (сир + яйця)",
+        kcal: 280, protein: 30, per: "порція",
+        tags: ["15 хв", "сніданок"],
+        pairs: ["Ягоди або яблуко", "Грецький йогурт натуральний", "Мед краплю (тільки не при висипаннях)"],
+        subs: ["Сирники — простіше і схоже"],
+        methods: {
+          g: { btn: "—", time: "—", steps: ["Краще на плиті — рівна поверхня потрібна."] },
+          s: { label: "Плита ⭐", time: "15 хв", steps: ["Сир + яйця + вівсяні пластівці збити блендером або виделкою.", "Антипригарна сковорода, середній вогонь.", "Ложку тіста — тонкий млинець.", "По 2–3 хв з кожного боку.", "Виходить 6–8 штук — ситний сніданок."] },
+          o: { label: "Духовка (запечені)", time: "20 хв при 180°C", steps: ["Тісто вилити у форму для маффінів.", "180°C — 18–20 хв.", "Виходять протеїнові кекси."] },
+        },
+        ing: ["200г знежиреного сиру", "2 яйця", "2 ст.л. вівсяних пластівців", "½ ч.л. кориці", "дрібка солі"]
+      },
+      {
+        name: "Яйце запечене в авокадо",
+        kcal: 250, protein: 14, per: "порція",
+        tags: ["духовка", "15 хв", "ефектно"],
+        pairs: ["Свіжий салат поруч", "Тост цільнозерновий", "Черрі зверху"],
+        subs: ["Просто авокадо + варене яйце якщо немає часу"],
+        methods: {
+          g: { btn: "—", time: "—", steps: ["Потрібна духовка для цієї страви."] },
+          s: { label: "Не підходить", time: "—", steps: ["Краще духовка."] },
+          o: { label: "Духовка ⭐", time: "15 хв при 200°C", steps: ["Авокадо розрізати навпіл, видалити кісточку.", "Якщо ямка мала — трохи збільшити ложкою.", "Вбити по 1 яйцю в кожну половинку.", "Посолити, поперчити.", "200°C — 12–15 хв (жовток має бути трохи рідким).", "Збризнути лимоном, зелень зверху."] },
+        },
+        ing: ["1 авокадо", "2 яйця", "сіль, чорний перець", "лимон", "петрушка або кінза"]
+      },
+      {
+        name: "Курка в томатно-часниковому соусі",
+        kcal: 190, protein: 28, per: "100г",
+        tags: ["x3", "30 хв", "соковито"],
+        pairs: ["Рис", "Гречка", "Хліб щоб вмочати соус", "Свіжий салат"],
+        subs: ["Риба замість курки — готувати 15 хв"],
+        methods: {
+          g: { btn: "Sear → Poultry", time: "25 хв", steps: ["Sear: цибулю 2 хв, часник 1 хв.", "Додати томати консервовані + паприку + базилік.", "Зверху — шматки грудки.", "Poultry 15 хв.", "М'ясо вийде просоченим соусом."] },
+          s: { label: "Плита ⭐", time: "30 хв", steps: ["Цибулю + часник 3 хв на олії.", "Грудку шматками обсмажити 4 хв.", "Залити консервованими томатами.", "Паприка, базилік, сіль.", "Кришка, малий вогонь 20 хв."] },
+          o: { label: "Духовка", time: "40 хв при 180°C", steps: ["Все скласти у форму.", "180°C — 40 хв під фольгою.", "Останні 10 хв — зняти фольгу."] },
+        },
+        ing: ["400г курячої грудки", "1 банка (400г) консервованих помідорів", "1 цибулина", "3 зубчики часнику", "½ ч.л. паприки", "базилік", "сіль, чорний перець", "краплі оливкової олії"]
+      },
+      {
+        name: "Запечена скумбрія з лимоном",
+        kcal: 200, protein: 19, per: "100г",
+        tags: ["духовка", "20 хв", "омега-3"],
+        pairs: ["Картопля або батат", "Свіжий салат", "Запечені черрі", "Гарбуз"],
+        subs: ["Лосось або форель — ті самі кроки", "Хек — нейтральніший смак"],
+        methods: {
+          g: { btn: "Fish або Steam", time: "Fish 8 хв / Steam 15 хв", steps: ["Fish 8 хв — швидко під тиском.", "Або Steam 15 хв — ніжніше."] },
+          s: { label: "Плита", time: "12 хв", steps: ["Сковорода на середньо-сильному вогні.", "Скумбрія шкірою вниз 6–7 хв.", "Перевернути, ще 4–5 хв.", "Лимон після."] },
+          o: { label: "Духовка ⭐", time: "20 хв при 180°C", steps: ["Скумбрію покласти на фольгу.", "Лимон кружечками зверху, розмарин, сіль.", "Загорнути у фольгу — конверт.", "180°C — 20 хв.", "Виходить дуже соковита — сік залишається всередині."] },
+        },
+        ing: ["1–2 скумбрії (або 400г філе)", "1 лимон", "розмарин або кріп", "сіль, чорний перець", "краплі оливкової олії"]
+      },
+      {
+        name: "Омлет з начинкою (в духовці)",
+        kcal: 280, protein: 24, per: "порція",
+        tags: ["духовка", "15 хв", "пишний"],
+        pairs: ["Свіжий салат", "Цільнозерновий хліб"],
+        subs: ["Звичайна яєчня на сковороді — швидше"],
+        methods: {
+          g: { btn: "—", time: "—", steps: ["Краще в духовці або на плиті."] },
+          s: { label: "Плита", time: "10 хв", steps: ["Яйця збити + молоко + сіль.", "Начинку (шпинат/помідор/перець) обсмажити 2 хв.", "Залити яйцями, кришка, малий вогонь 7 хв."] },
+          o: { label: "Духовка ⭐", time: "15 хв при 180°C", steps: ["Яйця збити із сіллю (3–4 яйця).", "Додати шпинат, черрі, болгарський перець.", "Вилити у жароміцну форму.", "180°C — 12–15 хв.", "Виходить пишний, рівномірно пропечений."] },
+        },
+        ing: ["3–4 яйця", "50г шпинату", "5–6 черрі", "½ перцю", "30г сиру фета (за бажанням)", "сіль, чорний перець"]
+      },
+    ]
+  },
+
+];
+
+const COMBOS = [
+  { label:"🌅 Сніданок A", time:"10 хв", kcal:500, protein:28, lines:["Вівсянка на мигдальному молоці + горіхи + кориця","Plита 7 хв або Porridge 10 хв","+ 2 яйця всмятку окремо"] },
+  { label:"🌅 Сніданок B", time:"8 хв", kcal:360, protein:26, lines:["Яєчня: 3 яйця + перець + помідор","Сковорода 8 хв"] },
+  { label:"🌅 Сніданок C", time:"0 хв зранку", kcal:380, protein:20, lines:["Overnight oats: пластівці + молоко у банку ввечері","Вранці — готово, 0 хв"] },
+  { label:"🍱 Обід A", time:"5 хв", kcal:580, protein:52, lines:["Грудка + гречка з холодильника — розігріти","+ свіжий салат 5 хв"] },
+  { label:"🍱 Обід B", time:"5 хв", kcal:550, protein:55, lines:["Грудка + сочевиця з холодильника","+ свіжий салат"] },
+  { label:"🍱 Обід C", time:"5 хв", kcal:560, protein:48, lines:["Стегна + картопля запечена з холодильника","+ свіжий салат"] },
+  { label:"🌙 Вечеря A", time:"15–20 хв", kcal:310, protein:38, lines:["Риба свіжа: Steam 12 хв або духовка 20 хв або сковорода 10 хв","+ броколі або свіжий салат"] },
+  { label:"🌙 Вечеря B", time:"5 хв", kcal:280, protein:28, lines:["Тунець + листовий салат + огірок + черрі + олія","Без готування"] },
+  { label:"🌙 Вечеря C", time:"5 хв", kcal:480, protein:46, lines:["М'ясо або риба з холодильника + гарнір + салат"] },
+  { label:"💪 Після тренування", time:"1 хв", kcal:260, protein:24, lines:["Шейк: протеїн + мигдальне молоко","+ банан окремо"] },
+  { label:"🥜 Перекус A", time:"0 хв", kcal:260, protein:18, lines:["2 варених яйця + 20г горіхів"] },
+  { label:"🥜 Перекус B", time:"0 хв", kcal:230, protein:6, lines:["25г горіхів + яблуко"] },
+];
+
+const DEFAULT_SHOPPING = [
+  { cat:"🐔 М'ясо та риба", items:[{n:"Куряча грудка 1.2кг"},{n:"Курячі стегна без шкіри 600г"},{n:"Хек або минтай 400г"},{n:"Тунець консервований у воді 3 банки"},{n:"Яйця 20шт"}] },
+  { cat:"🥦 Овочі", items:[{n:"Огірки 1кг"},{n:"Помідори черрі 500г"},{n:"Болгарський перець 4шт"},{n:"Листовий салат 2 головки"},{n:"Броколі 400г"},{n:"Цукіні 2шт"},{n:"Морква 4шт"},{n:"Авокадо 3шт"}] },
+  { cat:"🌾 Крупи та бобові", items:[{n:"Вівсяні пластівці 500г"},{n:"Гречка 500г"},{n:"Рис 500г"},{n:"Червона сочевиця 300г"}] },
+  { cat:"🥜 Горіхи та насіння", items:[{n:"Мигдаль 150г"},{n:"Волоські горіхи 100г"},{n:"Насіння льону або чіа"}] },
+  { cat:"🧴 Інше", items:[{n:"Мигдальне молоко без цукру 2л"},{n:"Оливкова олія extra virgin"},{n:"Лимони 4шт"},{n:"Часник 1 головка"}] },
+];
+
+// ── STATE ──
+let mealEntries = JSON.parse(localStorage.getItem('meals') || '[]');
+let shopItems = JSON.parse(localStorage.getItem('shop') || 'null');
+let userRecipes = JSON.parse(localStorage.getItem('recipes') || '[]');
+if (!shopItems) shopItems = DEFAULT_SHOPPING.map(c => ({ cat:c.cat, items:c.items.map(i=>({n:i.n,c:false})) }));
+
+function save() {
+  localStorage.setItem('meals', JSON.stringify(mealEntries));
+  localStorage.setItem('shop', JSON.stringify(shopItems));
+  localStorage.setItem('recipes', JSON.stringify(userRecipes));
+}
+
+// ── NAV ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const idx = ['blocks','combos','tracker','shopping','recipes'].indexOf(name);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  if (name==='tracker') renderTracker();
+  if (name==='shopping') renderShopping();
+  if (name==='recipes') renderRecipes();
+}
+
+// ── BLOCKS ──
+const itemStore = {};
+function renderBlocks() {
+  const wrap = document.getElementById('page-blocks');
+  BLOCKS_DATA.forEach((block, bi) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cssText = `background:${block.color};border-color:${block.border}`;
+    card.innerHTML = `
+      <div class="card-header" onclick="this.closest('.card').classList.toggle('open')">
+        <div>
+          <div class="card-title" style="color:${block.accent}">${block.category}</div>
+          <div class="card-desc">${block.desc}</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="card-body" id="cb${bi}"></div>`;
+    wrap.appendChild(card);
+    const body = document.getElementById('cb'+bi);
+    block.items.forEach((item, ii) => {
+      const k = `${bi}_${ii}`;
+      itemStore[k] = {item, accent: block.accent};
+      const tagsHtml = item.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `
+        <div class="item-header" onclick="toggleItem(this,'${k}')">
+          <div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-meta">
+              <span class="kcal-badge">🔥 ${item.kcal} ккал / ${item.per}</span>
+              <span class="prot-badge">💪 ${item.protein}г білка</span>
+              ${tagsHtml}
+            </div>
+          </div>
+          <div class="item-chevron">▾</div>
+        </div>
+        <div class="item-body" id="ib${k}"></div>`;
+      body.appendChild(el);
+    });
+  });
+}
+
+function toggleItem(header, k) {
+  const item_el = header.closest('.item');
+  item_el.classList.toggle('open');
+  const body = document.getElementById('ib'+k);
+  if (item_el.classList.contains('open') && !body.innerHTML) {
+    let {item, accent} = itemStore[k];
+    // normalize methods wrapper
+    if (item.methods) { item = {...item, g:item.methods.g||item.methods.gorenje, s:item.methods.s||item.methods.stove, o:item.methods.o||item.methods.oven}; itemStore[k].item = item; }
+    body.innerHTML = buildBody(k, item, accent);
+  }
+}
+
+function buildBody(k, item, accent) {
+  return `
+    <div class="method-tabs">
+      <button class="mt-btn active-g" id="mt${k}_g" onclick="setM('${k}','g')">🫕 Gorenje</button>
+      <button class="mt-btn" id="mt${k}_s" onclick="setM('${k}','s')">🍳 Плита</button>
+      <button class="mt-btn" id="mt${k}_o" onclick="setM('${k}','o')">🔥 Духовка</button>
+    </div>
+    <div class="time-pill tp-g" id="tp${k}">⏱ ${item.g.time}${item.g.btn&&item.g.btn!=='—'?' · '+item.g.btn:''}</div>
+    <div class="slabel">Інгредієнти</div>
+    ${item.ing.map(i=>`<div class="ing-item"><div class="ing-dot"></div>${i}</div>`).join('')}
+    <div class="slabel">Кроки</div>
+    <div id="st${k}">${stepsH(item.g.steps)}</div>
+    <button class="xbtn" onclick="xToggle('xp${k}','xa${k}')">
+      <span>🤝 З чим поєднується</span><span id="xa${k}">▾</span>
+    </button>
+    <div class="expandable" id="xp${k}">${item.pairs.map(p=>`<span class="pair-chip">${p}</span>`).join('')}</div>
+    <button class="xbtn" onclick="xToggle('xs${k}','xb${k}')">
+      <span>🔄 Варіанти заміни</span><span id="xb${k}">▾</span>
+    </button>
+    <div class="expandable" id="xs${k}">${item.subs.map(s=>`<div class="sub-row"><span class="sub-arrow">→</span>${s}</div>`).join('')}</div>`;
+}
+
+function stepsH(steps) {
+  return steps.map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div>${s}</div>`).join('');
+}
+
+function setM(k, m) {
+  ['g','s','o'].forEach(x => {
+    document.getElementById(`mt${k}_${x}`).className = 'mt-btn' + (x===m?' active-'+m:'');
+  });
+  const {item} = itemStore[k];
+  const mdata = item.methods || item;
+  const tp = document.getElementById('tp'+k);
+  tp.className = `time-pill tp-${m}`;
+  tp.textContent = `⏱ ${item[m].time}${item[m].btn&&item[m].btn!=='—'?' · '+item[m].btn:''}`;
+  document.getElementById('st'+k).innerHTML = stepsH(item[m].steps);
+}
+
+function xToggle(id, aid) {
+  const el = document.getElementById(id);
+  const arrow = document.getElementById(aid);
+  const isOpen = el.classList.contains('open') || el.classList.contains('open-col');
+  if (isOpen) { el.classList.remove('open','open-col'); arrow.textContent='▾'; }
+  else { el.classList.add(id.startsWith('xs') ? 'open-col':'open'); arrow.textContent='▴'; }
+}
+
+// ── COMBOS ──
+function renderCombos() {
+  const wrap = document.getElementById('combos-list');
+  COMBOS.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'combo-card';
+    el.innerHTML = `
+      <div class="combo-label">${c.label}</div>
+      ${c.lines.map((l,i)=>`<div class="combo-line${i>0?' sub':''}">${l}</div>`).join('')}
+      <div class="combo-footer">
+        <span class="combo-chip kcal">🔥 ${c.kcal} ккал</span>
+        <span class="combo-chip prot">💪 ${c.protein}г</span>
+        <span class="combo-chip time">⏱ ${c.time}</span>
+      </div>`;
+    wrap.appendChild(el);
+  });
+}
+
+// ── TRACKER ──
+function renderTracker() {
+  const now = new Date();
+  document.getElementById('tracker-date').textContent = now.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'});
+  const tot = mealEntries.reduce((a,e)=>({k:a.k+(e.k||0),p:a.p+(e.p||0)}),{k:0,p:0});
+  const pct = Math.min(100, Math.round(tot.k/2300*100));
+  document.getElementById('t-kcal').textContent = tot.k;
+  document.getElementById('t-prot').textContent = tot.p;
+  document.getElementById('s-kcal').textContent = tot.k;
+  document.getElementById('s-prot').textContent = tot.p;
+  document.getElementById('s-pct').textContent = pct+'%';
+  document.getElementById('kcal-bar').style.width = pct+'%';
+  document.getElementById('kcal-bar').style.background = pct>100?'#c05050':'var(--accent)';
+  const list = document.getElementById('meal-list');
+  const icons = ['🍳','🍱','🥗','🍽️','🥜','🍖','🐟','🥦'];
+  list.innerHTML = mealEntries.length
+    ? mealEntries.map((e,i)=>`
+      <div class="meal-row">
+        <div class="meal-icon">${icons[i%icons.length]}</div>
+        <div class="meal-info">
+          <div class="meal-name-t">${e.n}</div>
+          <div class="meal-macros">${e.k} ккал · ${e.p}г білка</div>
+        </div>
+        <button class="del-btn" onclick="delMeal(${i})">×</button>
+      </div>`).join('')
+    : '<div class="empty" style="padding:20px 0"><div class="empty-icon">🍽️</div>Ще нічого не додано</div>';
+}
+
+function toggleAddMeal() {
+  document.getElementById('add-meal-form').classList.toggle('open');
+}
+function addMealEntry() {
+  const n = document.getElementById('meal-name-input').value.trim();
+  const k = parseInt(document.getElementById('meal-kcal-input').value)||0;
+  const p = parseInt(document.getElementById('meal-prot-input').value)||0;
+  if (!n) return;
+  mealEntries.push({n,k,p}); save();
+  document.getElementById('meal-name-input').value='';
+  document.getElementById('meal-kcal-input').value='';
+  document.getElementById('meal-prot-input').value='';
+  document.getElementById('add-meal-form').classList.remove('open');
+  renderTracker();
+}
+function delMeal(i){ mealEntries.splice(i,1); save(); renderTracker(); }
+function clearDay(){ if(confirm('Очистити весь день?')){mealEntries=[];save();renderTracker();} }
+
+// ── SHOPPING ──
+function renderShopping() {
+  const wrap = document.getElementById('shop-list');
+  wrap.innerHTML = '';
+  shopItems.forEach((cat,ci)=>{
+    const done = cat.items.filter(i=>i.c).length;
+    const el = document.createElement('div');
+    el.className = 'shop-cat';
+    el.innerHTML = `
+      <div class="shop-cat-header">
+        <div class="shop-cat-title">${cat.cat}</div>
+        <div class="shop-cat-count">${done}/${cat.items.length}</div>
+      </div>
+      <div class="shop-items" id="sc${ci}">
+        ${cat.items.map((item,ii)=>`
+          <div class="shop-item">
+            <div class="shop-check ${item.c?'checked':''}" onclick="toggleShop(${ci},${ii})"></div>
+            <span class="shop-item-name ${item.c?'done':''}">${item.n}</span>
+            <button class="del-shop" onclick="delShop(${ci},${ii})">×</button>
+          </div>`).join('')}
+      </div>
+      <div class="add-shop-row">
+        <input class="form-input" id="si${ci}" placeholder="Додати продукт..." onkeydown="if(event.key==='Enter')addShop(${ci})">
+        <button class="add-shop-btn" onclick="addShop(${ci})">+</button>
+      </div>`;
+    wrap.appendChild(el);
+  });
+}
+function toggleShop(ci,ii){shopItems[ci].items[ii].c=!shopItems[ci].items[ii].c;save();renderShopping();}
+function delShop(ci,ii){shopItems[ci].items.splice(ii,1);save();renderShopping();}
+function addShop(ci){
+  const inp=document.getElementById('si'+ci);
+  const v=inp.value.trim(); if(!v)return;
+  shopItems[ci].items.push({n:v,c:false}); inp.value=''; save(); renderShopping();
+}
+function clearChecked(){shopItems.forEach(c=>{c.items=c.items.filter(i=>!i.c)});save();renderShopping();}
+
+// ── RECIPES ──
+function renderRecipes() {
+  const wrap = document.getElementById('recipes-list');
+  wrap.innerHTML = '';
+  if (!userRecipes.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">📖</div>Ще немає своїх рецептів</div>';
+    return;
+  }
+  userRecipes.forEach((r,ri)=>{
+    const el = document.createElement('div');
+    el.className = 'recipe-card';
+    el.innerHTML = `
+      <div class="recipe-header" onclick="this.closest('.recipe-card').classList.toggle('open')">
+        <div>
+          <div class="recipe-title">${r.name}</div>
+          <div class="recipe-meta">${r.kcal} ккал · ${r.prot}г білка</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="event.stopPropagation();delRecipe(${ri})" style="background:none;border:none;color:rgba(255,255,255,0.2);font-size:16px;cursor:pointer">×</button>
+          <div class="chevron">▾</div>
+        </div>
+      </div>
+      <div class="recipe-body">
+        ${r.ing?`<div class="slabel">Інгредієнти</div>${r.ing.split('\n').map(i=>`<div class="ing-item"><div class="ing-dot"></div>${i}</div>`).join('')}`:''}
+        ${r.steps?`<div class="slabel">Кроки</div>${r.steps.split('\n').map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div>${s}</div>`).join('')}`:''}
+      </div>`;
+    wrap.appendChild(el);
+  });
+}
+function openAddRecipe(){
+  ['r-name','r-kcal','r-prot','r-ing','r-steps'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('recipe-modal').classList.add('open');
+}
+function saveRecipe(){
+  const name=document.getElementById('r-name').value.trim(); if(!name)return;
+  userRecipes.push({name,kcal:parseInt(document.getElementById('r-kcal').value)||0,prot:parseInt(document.getElementById('r-prot').value)||0,ing:document.getElementById('r-ing').value.trim(),steps:document.getElementById('r-steps').value.trim()});
+  save(); closeModal('recipe-modal'); renderRecipes();
+}
+function delRecipe(i){if(confirm('Видалити?')){userRecipes.splice(i,1);save();renderRecipes();}}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ── INIT ──
+renderBlocks();
+renderCombos();
+renderTracker();
+</script>
+</body>
+</html>
